@@ -32,11 +32,15 @@ class ProductCategory(models.Model):
 
 class Product(models.Model):
     product_title = models.CharField(max_length=255)
+    product_sub_title = models.CharField(max_length=255, null=True, blank=True)
+    product_description = models.TextField(null=True, blank=True)
     product_price = models.IntegerField()
     sales_count = models.PositiveIntegerField(default=0)
     stock = models.PositiveIntegerField(default=0)
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
     slug = models.SlugField(unique=True, null=True, blank=True, allow_unicode=True)
+    icon = models.FileField(upload_to='products/icons/', validators=[validate_image_or_svg], null=True, blank=True)
+    is_slider = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -61,3 +65,17 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f'Image for {self.product.product_title}'
+
+
+class Poster(models.Model):
+    title = models.CharField(max_length=255)
+    sub_title = models.CharField(max_length=255)
+    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='posters/')
+    icon = models.FileField(upload_to='posters/icons/', validators=[validate_image_or_svg], null=True, blank=True)
+    is_footer_poster = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
