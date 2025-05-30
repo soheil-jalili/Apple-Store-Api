@@ -2,7 +2,9 @@ import os
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from django.utils.text import slugify
+from datetime import timedelta
 
 
 def validate_image_or_svg(file):
@@ -30,6 +32,14 @@ class ProductCategory(models.Model):
         super().save(*args, **kwargs)
 
 
+class ColorProduct(models.Model):
+    name = models.CharField(max_length=50)
+    code_color = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
     product_title = models.CharField(max_length=255)
     product_sub_title = models.CharField(max_length=255, null=True, blank=True)
@@ -41,6 +51,13 @@ class Product(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True, allow_unicode=True)
     icon = models.FileField(upload_to='products/icons/', validators=[validate_image_or_svg], null=True, blank=True)
     is_slider = models.BooleanField(default=False)
+
+    is_discounted = models.BooleanField(default=False)
+    discount_price = models.IntegerField(null=True, blank=True)
+    discount_end_time = models.DateTimeField(null=True, blank=True)
+
+    colors = models.ManyToManyField(ColorProduct, blank=True)
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -52,6 +69,16 @@ class Product(models.Model):
             self.slug = slugify(self.product_title, allow_unicode=True)
 
         super().save(*args, **kwargs)
+
+    def discount_time_left(self):
+        if self.discount_end_time and timezone.now() < self.discount_end_time:
+            delta = self.discount_end_time - timezone.now()
+            return {
+                'days': delta.days,
+                'hours': delta.seconds // 3600,
+                'minutes': (delta.seconds % 3600) // 60,
+            }
+        return None
 
 
 def product_image_upload_path(instance, filename):

@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,6 +19,9 @@ class HomeView(APIView):
         slider_items_serializer = ProductSerializer(instance=slider_items, many=True)
 
         # amazing_offers
+        now = timezone.now()
+        amazing_offers = Product.objects.filter(is_discounted=True, discount_end_time__gt=now)[:4]
+        amazing_offers_serializer = ProductSerializer(instance=amazing_offers, many=True)
 
         # best-selling products
         best_selling = Product.objects.all().order_by('-sales_count')[:4]
@@ -38,7 +42,7 @@ class HomeView(APIView):
         return Response({
             'categories': serializer.data,
             'slider_items': slider_items_serializer.data,
-            'amazing_offers': slider_items_serializer.data,
+            'amazing_offers': amazing_offers_serializer.data,
             'best_selling': best_selling_serializer.data,
             'main_poster': poster_main_item_serializer.data,
             'apple_watches': apple_watches_item_serializer.data,
