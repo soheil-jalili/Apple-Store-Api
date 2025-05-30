@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -17,4 +18,18 @@ class ProductSearchView(APIView):
             }, status=status.HTTP_200_OK)
         return Response({
             'message': 'محصولی یافت نشد'
+        })
+
+
+class DetailView(APIView):
+    def get(self, request, slug):
+        product = get_object_or_404(Product, slug=slug)
+        if product:
+            serializer = ProductSerializer(product)
+            return Response({
+                'product': serializer.data
+            })
+
+        return Response({
+            'message': 'Not found'
         })
