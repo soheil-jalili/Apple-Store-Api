@@ -9,6 +9,7 @@ This is a RESTful API built with Django and Django REST Framework for managing a
 - Best-selling and featured products
 - Apple Watch-specific product filtering
 - Poster management (main and footer banners)
+- Product detail endpoint added ✅
 - Fully structured API responses for front-end integration
 
 ## Technologies
@@ -18,6 +19,13 @@ This is a RESTful API built with Django and Django REST Framework for managing a
 - Django REST Framework (DRF)
 - SQLite / PostgreSQL (switchable)
 - Git version control
+
+## Getting Started
+
+1. **Clone the repository:**
+
+
+git clone https://github.com/soheil-jalili/Apple-Store-Api.git
 
 ## Getting Started
 
