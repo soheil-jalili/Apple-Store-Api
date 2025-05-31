@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/product/', include('products.urls')),
     path('api/home/', views.HomeView.as_view(), name='home'),
+    path('api/account/', include('account.urls')),
 ]
 
 if DEBUG:
