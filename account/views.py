@@ -21,7 +21,7 @@ class SignUpView(APIView):
 
             profile_image_url = None
             if hasattr(user, 'profile') and user.profile.profile_image:
-                profile_image_url = user.profile.profile_image.url  # فقط مسیر نسبی
+                profile_image_url = user.profile.profile_image.url
 
             return Response({
                 'message': 'Sign up successfully',
