@@ -3,7 +3,7 @@ from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apple_store_api.serializers import ProductSerializer, PosterSerializer
+from apple_store_api.serializers import ProductSerializer, PosterSerializer, CartItemSerializer
 from products.models import ProductCategory, Product, Poster, CartItem
 from products.serializers import CategorySerializer
 
@@ -72,18 +72,12 @@ class AddToCartView(APIView):
         return Response({'message': 'Added to cart successfully'}, status=status.HTTP_200_OK)
 
 
-class RemoveAllFromCartView(APIView):
+class ClearCartView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request):
-        product_id = request.data.get('product')
-
-        try:
-            cart_item = CartItem.objects.get(user=request.user, product_id=product_id)
-            cart_item.delete()
-            return Response({'message': 'Removed from cart successfully'}, status=status.HTTP_200_OK)
-        except CartItem.DoesNotExist:
-            return Response({'error': 'Item not found in cart'}, status=status.HTTP_404_NOT_FOUND)
+        CartItem.objects.filter(user=request.user).delete()
+        return Response({'message': 'Cart cleared successfully'}, status=status.HTTP_200_OK)
 
 
 class RemoveFromCartView(APIView):
@@ -105,3 +99,18 @@ class RemoveFromCartView(APIView):
 
         except CartItem.DoesNotExist:
             return Response({'error': 'Item not found in cart'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GetCartItems(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        cart_items = CartItem.objects.filter(user=request.user)
+        serializer = CartItemSerializer(cart_items, many=True)
+        total_price = sum([
+            item.product.product_price * item.quantity for item in cart_items
+        ])
+        return Response({
+            'cart': serializer.data,
+            'total_price': total_price,
+        }, status=status.HTTP_200_OK)

@@ -20,16 +20,17 @@ from django.urls import path, include
 
 from apple_store_api import views
 from apple_store_api.settings import DEBUG, MEDIA_URL, MEDIA_ROOT
-from apple_store_api.views import AddToCartView, RemoveAllFromCartView, RemoveFromCartView
+from apple_store_api.views import AddToCartView, ClearCartView, RemoveFromCartView, GetCartItems
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/product/', include('products.urls')),
     path('api/home/', views.HomeView.as_view(), name='home'),
     path('api/account/', include('account.urls')),
+    path('api/cart/checkout/', GetCartItems.as_view(), name='get_cart_items'),
     path('api/cart/add/', AddToCartView.as_view(), name='add-to-cart'),
     path('api/cart/remove/', RemoveFromCartView.as_view(), name='remove-from-cart'),
-    path('api/cart/remove-all/', RemoveAllFromCartView.as_view(), name='remove-all-cart'),
+    path('api/cart/remove-all/', ClearCartView.as_view(), name='remove-all-cart'),
 ]
 
 if DEBUG:
