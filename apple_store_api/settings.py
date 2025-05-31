@@ -45,12 +45,19 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
 
     'rest_framework',
+    'ckeditor',
     'rest_framework.authtoken',
 
     'django_cleanup.apps.CleanupConfig',
     'corsheaders',
-
 ]
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+    },
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

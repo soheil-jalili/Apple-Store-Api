@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
 from account.models import Profile
 
 
@@ -29,11 +28,13 @@ class SignUpSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile', None)
+        profile_data = validated_data.pop('profile_image', None)
         password = validated_data.pop('password')
         user = User.objects.create_user(**validated_data, password=password)
 
         if profile_data:
             Profile.objects.create(user=user, **profile_data)
+        else:
+            Profile.objects.create(user=user)
 
         return user

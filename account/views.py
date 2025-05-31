@@ -15,12 +15,18 @@ class SignUpView(APIView):
         if signup_serializer.is_valid():
             user = signup_serializer.save()
             token, created = Token.objects.get_or_create(user=user)
+
+            profile_image_url = None
+            if hasattr(user, 'profile') and user.profile.profile_image:
+                profile_image_url = request.build_absolute_uri(user.profile.profile_image.url)
+
             return Response({
                 'message': 'Sign up successfully',
                 'user': {
                     'id': user.id,
                     'username': user.username,
                     'email': user.email,
+                    'profile_image': profile_image_url,
                 },
                 'token': token.key
             }, status=status.HTTP_201_CREATED)

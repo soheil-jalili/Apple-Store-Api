@@ -1,5 +1,6 @@
 import os
 
+from ckeditor.fields import RichTextField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -43,12 +44,12 @@ class ColorProduct(models.Model):
 class Product(models.Model):
     product_title = models.CharField(max_length=255)
     product_sub_title = models.CharField(max_length=255, null=True, blank=True)
-    product_description = models.TextField(null=True, blank=True)
+    product_description = RichTextField(null=True, blank=True)
     product_price = models.IntegerField()
     sales_count = models.PositiveIntegerField(default=0)
     stock = models.PositiveIntegerField(default=0)
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
-    slug = models.SlugField(unique=True, null=True, blank=True, allow_unicode=True)
+    slug = models.SlugField(unique=True, null=True, blank=True, allow_unicode=True, max_length=255)
     icon = models.FileField(upload_to='products/icons/', validators=[validate_image_or_svg], null=True, blank=True)
     is_slider = models.BooleanField(default=False)
 
@@ -66,7 +67,9 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if self.product_title:
-            self.slug = slugify(self.product_title, allow_unicode=True)
+            new_slug = slugify(self.product_title, allow_unicode=True)
+            if not self.slug or self.slug != new_slug:
+                self.slug = new_slug
 
         super().save(*args, **kwargs)
 
