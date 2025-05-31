@@ -42,6 +42,8 @@ python manage.py runserver
 ## API Endpoints (Sample)
 
 - `/api/home/` → Returns all homepage data (categories, sliders, best-selling, Apple Watches, footer poster, etc.)
+- `/api/product/` → Handles product-related endpoints (list, detail, filtering, etc.)
+- `/api/account/` → Handles user authentication and profile management (register, login, logout, etc.)
 
 ## Author
 
