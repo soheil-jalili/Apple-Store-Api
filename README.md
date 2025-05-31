@@ -11,7 +11,7 @@ This is a RESTful API built with Django and Django REST Framework for managing a
 - Poster management (main and footer banners)
 - Product detail endpoint added ✅
 - Fully structured API responses for front-end integration
-- Fully implemented cart management endpoints: support for retrieving, adding, removing, and clearing cart items ✅
+- Fully implemented cart management endpoints: support for retrieving, adding, removing, and clearing cart items
 
 ## Technologies
 

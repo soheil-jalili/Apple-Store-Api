@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from account.serializer import SignUpSerializer
 from django.contrib.auth import authenticate
@@ -10,15 +11,17 @@ from rest_framework.authtoken.models import Token
 
 
 class SignUpView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def post(self, request):
-        signup_serializer = SignUpSerializer(data=request.data)
-        if signup_serializer.is_valid():
-            user = signup_serializer.save()
-            token, created = Token.objects.get_or_create(user=user)
+        serializer = SignUpSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = serializer.save()
+            token, _ = Token.objects.get_or_create(user=user)
 
             profile_image_url = None
             if hasattr(user, 'profile') and user.profile.profile_image:
-                profile_image_url = request.build_absolute_uri(user.profile.profile_image.url)
+                profile_image_url = user.profile.profile_image.url  # فقط مسیر نسبی
 
             return Response({
                 'message': 'Sign up successfully',
@@ -30,7 +33,7 @@ class SignUpView(APIView):
                 },
                 'token': token.key
             }, status=status.HTTP_201_CREATED)
-        return Response(signup_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SignInView(APIView):

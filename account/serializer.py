@@ -4,6 +4,8 @@ from account.models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    profile_image = serializers.ImageField(required=False)
+
     class Meta:
         model = Profile
         fields = ['profile_image']
@@ -11,11 +13,10 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class SignUpSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    profile = ProfileSerializer(required=False)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'profile')
+        fields = ('username', 'email', 'password')
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -28,13 +29,11 @@ class SignUpSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile_image', None)
+        request = self.context.get('request')
+        profile_image = request.FILES.get('profile_image') if request else None
+
         password = validated_data.pop('password')
         user = User.objects.create_user(**validated_data, password=password)
 
-        if profile_data:
-            Profile.objects.create(user=user, **profile_data)
-        else:
-            Profile.objects.create(user=user)
-
+        Profile.objects.create(user=user, profile_image=profile_image)
         return user
