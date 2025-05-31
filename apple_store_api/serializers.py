@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from products.models import Product, ProductImage, Poster, ColorProduct
+from products.models import Product, ProductImage, Poster, ColorProduct, CartItem
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -42,3 +42,9 @@ class PosterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Poster
         fields = '__all__'
+
+
+class CartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product', 'quantity']
